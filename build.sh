@@ -1,0 +1,2 @@
+boon build . --target all
+
