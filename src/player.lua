@@ -4,6 +4,7 @@ player = {}
 player.x, player.y = PLAYER_POS[1], PLAYER_POS[2]
 player.angle = PLAYER_ANGLE
 player.rel = 0
+player.vis = 0
 
 function check_wall(x, y)
 	for i, pos in ipairs(map.world_map) do
@@ -66,6 +67,12 @@ function player:update(dt)
 		player.angle = player.angle + (PLAYER_ROT_SPEED * dt)
 	end
 
+	-- if love.keyboard.isDown("up") then
+	-- 	player.vis = player.vis - 10
+	-- elseif love.keyboard.isDown("down") then
+	-- 	player.vis = player.vis + 10
+	-- end
+
 	player.angle = player.angle % 6.283185307179586 -- tau (Full turn in radians)
 end
 
@@ -82,7 +89,7 @@ function player:draw()
 	love.graphics.circle('fill',
 						player.x * map.size, player.y * map.size, -- X, Y
 						-- math.floor(map.size/6.5) -- Radius
-						9 -- Radius
+						4 -- Radius
 					)
 end
 	

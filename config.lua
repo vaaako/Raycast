@@ -2,10 +2,6 @@
 WIDTH  = 960
 HEIGHT = 640
 
--- WIDTH  = love.graphics.getWidth()
--- HEIGHT = love.graphics.getHeight()
-
--- = WIDTH, HEIGHT = 1600, 900
 HALF_WIDTH  = math.floor(WIDTH  / 2)
 HALF_HEIGHT = math.floor(HEIGHT / 2)
 FPS = 60
@@ -18,7 +14,16 @@ PLAYER_SPEED     = 4
 PLAYER_ROT_SPEED = 2
 -- PLAYER_SIZE_SCALE = 60
 
-FLOOR_COLOR = { 0.3, 0.3, 0.3 }
+-- On changing PLAYER_HEIGHT change WALL_SIZE to 6.25 or 3.25 respectivally
+PLAYER_HEIGHT = 1.25 -- 1.25 or 2
+
+
+-- MOUSE_SENSITIVITY = 0.0003
+-- MOUSE_SENSITIVITY = 0.003
+-- MOUSE_MAX_REL = 40
+-- MOUSE_BORDER_LEFT = 100
+-- MOUSE_BORDER_RIGHT = WIDTH - MOUSE_BORDER_LEFT
+
 
 FOV           = math.pi / 3
 HALF_FOV      = FOV / 2
@@ -32,3 +37,5 @@ SCALE       = math.floor(WIDTH / NUM_RAYS)
 
 TEXTURE_SIZE = 256
 HALF_TEXTURE_SIZE = math.floor(TEXTURE_SIZE / 2)
+WALLS_SIZE = ((6.25+3.25)/PLAYER_HEIGHT)-1.35
+FLOOR_COLOR = { 0.1, 0.1, 0.1 }

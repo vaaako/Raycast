@@ -1,72 +1,44 @@
 renderer = {}
--- renderer.wall_textures = load_wall_textures()
 renderer.sky_image = love.graphics.newImage('resources/textures/sky.png')
 renderer.sky_offset = 0
 
--- function render_game_obects()
-
---[[
-def render_game_obects(self):
-	list_objects = self.game.raycasting.objects_to_render
-	for depth, image, pos in list_objects:
-		self.screen.blit(image, pos)
---]]
 
 function renderer:draw()
+	-- Draw sky
+	love.graphics.setColor(1, 0, 1) -- Paint sky of purple
 
 	renderer.sky_offset = (renderer.sky_offset + 4.5 * player.rel) % WIDTH
+	
+	-- Draw two times to repeat the image when one ends
 	love.graphics.draw(renderer.sky_image, -renderer.sky_offset, 0)
-	-- love.graphics.draw(renderer.sky_image, -renderer.sky_offset + WIDTH, 0)
-	
-	-- love.graphics.setColor(FLOOR_COLOR)
-	-- love.graphics.rectangle("fill", 0, HALF_HEIGHT, WIDTH, HEIGHT)
+	love.graphics.draw(renderer.sky_image, -self.sky_offset + WIDTH, 0)
 
-
-
-	-- list_objects = raycast.objects_to_render
-	-- for _, obj in pairs(list_objects) do
-	-- 	-- depth, image, pos = obj[1], obj[2], obj[3]
-	-- 	img, quad, pos = obj[1], obj[2], obj[3]
-
-	-- 	-- print(img)
-	-- 	-- love.graphics.draw(img, bottom_left, 50, 200)
-	-- 	love.graphics.draw(img, quad, pos[1], pos[2])
-
-		-- love.graphics.draw(img, quad, pos[1], pos[2], 0, scale[1], scale[2])
-
-		-- love.graphics.pop()
-	-- end
-end
-
--- Path to the texture and resolution
-function get_texture(path)
-	texture = love.graphics.newImage(path) --.convertAplha()
-	return texture
+	-- Draw Floor
+	love.graphics.setColor(FLOOR_COLOR)
+	love.graphics.rectangle("fill", 0, HALF_HEIGHT, WIDTH, HEIGHT)
 end
 
 
-texSlice = {}
--- for i=1, 64 do
-for i=1, TEXTURE_SIZE do
-	
-	texSlice[i] = love.graphics.newQuad(i-1, 0, 1, TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE)
-	-- texSlice[i] = love.graphics.newQuad(i-1, 0, 1, 64, 64, 64)
+function renderer:walls(depth, id , wall, slice, ray)
+	-- Projection
+	proj_height = SCREEN_DIST / (depth + 0.0001)
+
+	if proj_height > 0 then
+		local c = 1 - depth/20
+		love.graphics.setColor(c, c, c) -- Shadow
+
+
+		if slice > 0 and slice <= TEXTURE_SIZE then
+			love.graphics.draw(
+				wallTextures[id], texSlice[slice], -- Texture, Quad
+				ray * SCALE, HALF_HEIGHT - math.floor(proj_height / PLAYER_HEIGHT), -- X, Y
+				0, -- Rot
+				SCALE, WALLS_SIZE/depth*hratio() -- Width, Height
+			)
+		end
+	end
 end
 
-
-wallTextures = {
-	-- If map number is 1, texture number 1
-	get_texture('resources/textures/1.png'),
-	get_texture('resources/textures/2.png'),
-	get_texture('resources/textures/3.png'),
-	get_texture('resources/textures/4.png'),
-	get_texture('resources/textures/5.png')
-}
-
-
-function sratio()
-	return wratio(), hratio()
-end
 
 function wratio()
 	return love.graphics.getWidth()/WIDTH
@@ -77,13 +49,19 @@ function hratio()
 end
 
 
+-- Add slices
+texSlice = {}
+for i=1, TEXTURE_SIZE do
+	texSlice[i] = love.graphics.newQuad(i-1, 0, 1, TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE)
+end
 
 
--- somewhere, outside of a callback
--- plane = love.graphics.newImage("plane.png")
-
--- -- somewhere, probably in love.draw
--- love.graphics.push()
--- love.graphics.scale(0.5, 0.5)
--- love.graphics.draw(plane, 200/0.5, 200/0.5) -- '/ 0.5' because scale affects everything, including position obviously
--- love.graphics.pop() -- so the scale doesn't affect anything else
+-- Load textures
+wallTextures = {
+	-- If map number is 1, texture number 1
+	love.graphics.newImage('resources/textures/1.png'),
+	love.graphics.newImage('resources/textures/2.png'),
+	love.graphics.newImage('resources/textures/3.png'),
+	love.graphics.newImage('resources/textures/4.png'),
+	love.graphics.newImage('resources/textures/5.png')
+}
