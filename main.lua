@@ -5,14 +5,15 @@ function love.load()
 	require "src/renderer"
 	require "src/raycast"
 	require "src/sprite"
+	require "src/handler"
 
 	-- Window Config
 	love.window.setTitle( "Vako cast (Not a podcast)" )
 	love.window.setMode( WIDTH, HEIGHT,
-						{ resizable=false, vsync=1, minwidth=640, minheight=600 } )
-	love.window.setFullscreen(false) -- Disable full screen
-
+						{ fullscreen=false, resizable=false, vsync=1, minwidth=640, minheight=600, centered=true} )
 	love.graphics.setDefaultFilter("nearest", "nearest") -- Anti alising
+	love.mouse.setRelativeMode(true) -- Mouse invisible and realtive to window
+	-- love.mouse.setVisible(true)
 
 	-- love.graphics.setBackgroundColor(0.7, 0.7, 0.7) -- Clear Screen
 	-- love.graphics.setLineWidth(wratio())
@@ -20,15 +21,15 @@ end
 
 function love.update(dt)
 	player:update(dt)
-	-- raycast:update()
-	sprites:update()
-
+	raycast:update()
+	handler:update() -- Update the all sprites in one function
+	-- static_sprites:update()
+	-- animated_sprites:update()
 end
 
 function love.draw()
 	renderer:draw()
-	raycast:draw()
-	-- sprites:draw()
+	-- raycast:draw()
 
 	-- Debug
 	-- map:draw()
@@ -43,23 +44,29 @@ function love.draw()
 
 end
 
+
+
 function love.keypressed(key)
 	if key == 'escape' then
 		love.event.quit()
 	end
+
+	if key == 'tab' then
+		local state = not love.mouse.getRelativeMode()   -- the opposite of whatever it currently is
+		love.mouse.setRelativeMode(state)
+	end
 end
 
--- love.mouse.setVisible(false)
--- love.mouse.setRelativeMode(true)
--- function love.mousemoved(x, y, dx, dy)
--- 	local mx, my = love.mouse.getPosition()
--- 	-- if mx < MOUSE_BORDER_LEFT or mx > MOUSE_BORDER_RIGHT then
--- 	-- 	love.mouse.setPosition( HALF_WIDTH, HALF_HEIGHT )
--- 	-- end
 
--- 	player.vis = player.vis + dy
+function love.mousemoved(x, y, dx, dy)
+	local mx, my = love.mouse.getPosition()
+	-- if mx < MOUSE_BORDER_LEFT or mx > MOUSE_BORDER_RIGHT then
+	-- 	love.mouse.setPosition( HALF_WIDTH, HALF_HEIGHT )
+	-- end
 
--- 	player.rel = dx
--- 	player.rel = math.max(-MOUSE_MAX_REL, math.min(MOUSE_MAX_REL, player.rel))
--- 	player.angle = player.angle + player.rel * MOUSE_SENSITIVITY
--- end
+	-- player.vis = player.vis + dy
+
+	player.rel = dx
+	player.rel = math.max(-MOUSE_MAX_REL, math.min(MOUSE_MAX_REL, player.rel))
+	player.angle = player.angle + player.rel * MOUSE_SENSITIVITY
+end
