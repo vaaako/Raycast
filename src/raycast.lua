@@ -1,6 +1,38 @@
 raycast = {}
+raycast.objects_to_render = {}
+raycast.result = {}
 
-function raycast:draw()
+function get_objects_to_render()
+	raycast.objects_to_render = {}
+
+	for ray, values in ipairs(raycast.result) do
+		depth, id , wall, slice = values[1], values[2], values[3], values[4]
+		-- Depth is to know what object is above what
+
+		proj_height = SCREEN_DIST / (depth + 0.0001)
+
+		if proj_height > 0 then
+			local c = 1 - depth/20
+			love.graphics.setColor(c, c, c) -- Shadow
+
+
+			if slice > 0 and slice <= 64 then
+				table.insert(raycast.objects_to_render, { depth, wallTextures[id], texSlice[slice], ray * SCALE, HALF_HEIGHT - math.floor(proj_height / PLAYER_HEIGHT), 0, SCALE, WALLS_SIZE/depth*hratio() })
+
+				-- love.graphics.draw(
+				-- 	wallTextures[id], texSlice[slice], -- Texture, Quad
+				-- 	ray * SCALE, HALF_HEIGHT - math.floor(proj_height / PLAYER_HEIGHT), -- X, Y
+				-- 	0, -- Rot
+				-- 	SCALE, WALLS_SIZE/depth*hratio() -- Width, Height
+				-- )
+			end
+		end
+	end
+end
+
+
+function raycaster()
+	raycast.result = {}
 	ox, oy = player_pos() -- Coordinates of the player on the map
 	x_map, y_map = map_pos() -- Coordinates of his tile
 
@@ -32,7 +64,8 @@ function raycast:draw()
 			local wall = check_wall(tile_hor[1], tile_hor[2])
 
 			if wall~=0 then
-				texture_hor = map.world_map[wall][2]
+				-- texture_hor = map.world_map[wall][2]
+				texture_hor = wall
 				break
 			end
 
@@ -61,8 +94,9 @@ function raycast:draw()
 			local wall = check_wall(tile_vert[1], tile_vert[2])
 
 			-- Stumble on wall
-			if wall~=0 then -- Break loop when reacha wall
+			if wall~=0 then -- Break loop when reach a wall
 				texture_vert = map.world_map[wall][2] -- Wall value
+				texture_vert = wall -- Wall value
 				break
 			end
 
@@ -76,14 +110,35 @@ function raycast:draw()
 
 
 		-- TEXTURE STARTS HERE
+		-- local wall,id,slice
+		-- if not depth_vert then
+		-- 	depth = depth_hor
+		-- 	wall = 0
+		-- 	id=texture_hor
+		-- elseif not depth_hor then
+		-- 	depth = depth_vert
+		-- 	wall = 1
+		-- 	id=texture_vert
+		-- elseif depth_vert < depth_hor then
+		-- 	depth = depth_vert
+		-- 	wall = 1
+		-- 	id=texture_vert
+		-- else
+		-- 	depth = depth_hor
+		-- 	wall = 0
+		-- 	id=texture_hor
+		-- end
+
+
 		local wall,id,slice
 		if depth_vert < depth_hor then
 			depth, wall, id = depth_vert, 1, texture_vert
-			y_vert = y_vert % 1
+			-- y_vert = y_vert % 1
 		else
 			depth, wall, id = depth_hor, 0,  texture_hor
-			x_hor = x_hor % 1
+			-- x_hor = x_hor % 1
 		end
+
 
 		if wall == 0 then
 			slice = x_hor*64
@@ -96,7 +151,8 @@ function raycast:draw()
 		-- Remove fishbowl effect
 		-- depth = depth or -1
 		depth = depth * math.cos(player.angle - ray_angle)
-		renderer:walls(depth, id, wall, slice, ray) -- Render walls
+		-- renderer:walls(depth, id, wall, slice, ray) -- Render walls
+		table.insert(raycast.result, { depth, id, wall, slice, ray })
 
 			
 		-- end
@@ -116,7 +172,13 @@ function raycast:draw()
 		-- 	SCALE, proj_height -- WIDTH, HEIGHT
 		-- )
 
+
+		-- raycast.objects_to_render[ray] = depth_hor
 		ray_angle = ray_angle + DELTA_ANGLE -- Angle for each ray
 	end
+end
 
+function raycast:draw()
+	raycaster()
+	get_objects_to_render()
 end
