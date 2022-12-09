@@ -4,6 +4,7 @@ player = {}
 player.x, player.y = PLAYER_POS[1], PLAYER_POS[2]
 player.angle = PLAYER_ANGLE
 player.rel = 0
+player.shot = false
 -- player.vis = 0
 
 function check_wall(x, y)
@@ -66,12 +67,6 @@ function player:update(dt)
 		player.angle = player.angle + (PLAYER_ROT_SPEED * dt)
 
 	end
-
-	-- if love.keyboard.isDown("up") then
-	-- 	player.vis = player.vis - 10
-	-- elseif love.keyboard.isDown("down") then
-	-- 	player.vis = player.vis + 10
-	-- end
 
 	player.angle = player.angle % TAU -- tau (Full turn in radians)
 end
