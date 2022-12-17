@@ -1,5 +1,4 @@
--- Get all images in a folder and add to a table
-function getImages(path)
+function getImages(path) -- Get all images in a folder and add to a table
 	image_names = love.filesystem.getDirectoryItems(path)
 
 	images = {}
@@ -35,8 +34,7 @@ function Sprite(x, y, path, scale, shift) -- Function to add a new static sprite
 
 	-- Functions
 	-- Call update function with self values
-	function sprite:update()
-		-- With self it is possible to use one function to multiples values
+	function sprite:update() -- With self it is possible to use one function to multiples values
 		get_sprite(self) -- Update with self values
 	end
 
@@ -60,16 +58,14 @@ function AnimSprite(x, y, path, time, scale, shift) -- Function to add a new ani
 	-- Functions
 	function anim_sprite:update() -- Animated Sprites update
 		get_sprite(self)
-		-- sprite:update()
 		self:animate(self.images)
 		self:check_animation_time()
 	end
 
 
 	function anim_sprite:animate(images) -- Change sprite each trigger
-		-- Make animation loop
-		if self.animation_trigger then
-			rotateTable(images) -- First index to last index
+		if self.animation_trigger then -- Make animation loop
+			rotateTable(images) -- First index to last index (loop)
 			self.image = images[1]
 		end
 	end
@@ -99,9 +95,8 @@ function get_sprite_projection(sprite)
 	posX = sprite.screen_x - sprite.sprite_half_width
 	posY = HALF_HEIGHT - math.floor(proj_height / 2) + height_shift
 
-	image = sprite.image
+	image = sprite.image -- Current sprite image
 
-	-- love.graphics.draw(image, posX, posY, 0, proj_width/image:getWidth(), proj_height/image:getHeight())
 	table.insert(raycast.objects_to_render, { sprite.norm_dist, image, posX, posY, 0, proj_width/image:getWidth(), proj_height/image:getHeight(), nil })
 end
 
