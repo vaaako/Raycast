@@ -131,10 +131,10 @@ end
 -- Utils
 -- Function to rotate table
 function rotateTable(t)
-	table.insert(t, 1, t[#t]) -- Add last index to first
-	table.remove(t, #t) -- Remove last index
-	-- t[#t+1] = t[1] -- First index item to last index
-	-- table.remove(t, 1) -- Remove first index
+	--table.insert(t, 1, t[#t]) -- Add last index to first
+	-- table.remove(t, #t) -- Remove last index
+	t[#t+1] = t[1] -- First index item to last index
+	table.remove(t, 1) -- Remove first index
 end
 
 function hypot(x, y)
